@@ -1,5 +1,5 @@
 # VMGET
-- vmget is a command line tool for downloading youtube videos and mp3 files
+- vmget is a command line tool for downloading videos and audio from youtube by providing links in different qualities.
   
 ## You can build you own executable file
 ```bash
@@ -28,4 +28,5 @@ Examples:
   python vmget.py "https://www.youtube.com/watch?v=S2sBNY9Wg8o" mp3 -o C:\Users\Abhi\Downloads
 
 ```
-  
+
+> Pull requests are always welcome. 😁
