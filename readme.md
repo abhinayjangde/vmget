@@ -1,12 +1,12 @@
 # VMGET
 - vmget is a command line tool for downloading youtube videos and mp3 files
--
-- ## You can build you own executable file
-- ```bash
-  pyinstaller --onefile vmget.py
-  ```
+  
+## You can build you own executable file
+```bash
+pyinstaller --onefile vmget.py
+```
 
-  ```powershell
+```powershell
  PS C:\Users\Abhi> vmget -h
 usage: vmget.exe [-h] [-o OUTPUT] url {mp4,mp3} [{360p,480p,720p,1080p}]
 
@@ -26,5 +26,6 @@ options:
 Examples:
   python vmget.py "https://www.youtube.com/watch?v=S2sBNY9Wg8o" mp4 720p
   python vmget.py "https://www.youtube.com/watch?v=S2sBNY9Wg8o" mp3 -o C:\Users\Abhi\Downloads
+
 ```
   
