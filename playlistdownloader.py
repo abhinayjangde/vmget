@@ -47,7 +47,7 @@ def download_playlist(playlist_url, quality=None, file_format="mp4", output_dir=
 
 def main():
     parser = argparse.ArgumentParser(
-        description="YT Video Downloader by [Abhi]",
+        description="YT Video Downloader by [Abhi and Nick]",
         epilog=(
             "Examples:\n"
             "  python vmget.py \"https://www.youtube.com/watch?v=S2sBNY9Wg8o\" mp4 720p\n"
