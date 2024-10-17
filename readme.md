@@ -29,4 +29,20 @@ Examples:
 
 ```
 
+# How to setup locally the web of vmget
+
+1. Create python virtual environment
+```bash
+python -m venv env
+```
+2. Activate environment & Install dependencies
+```bash
+./env/Scripts/active
+pip install -r requirements.txt
+```
+3. Run flask app
+```bash
+flask --app main run
+```
+
 > Pull requests are always welcome. 😁
