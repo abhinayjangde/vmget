@@ -28,21 +28,10 @@ Examples:
   python vmget.py "https://www.youtube.com/watch?v=S2sBNY9Wg8o" mp3 -o C:\Users\Abhi\Downloads
 
 ```
+## Important
 
-# How to setup locally the web of vmget
+make sure to install ffmpeg package on your system and add it to the PATH variable.
 
-1. Create python virtual environment
-```bash
-python -m venv env
-```
-2. Activate environment & Install dependencies
-```bash
-./env/Scripts/active
-pip install -r requirements.txt
-```
-3. Run flask app
-```bash
-flask --app main run
-```
+here is the link to download ffmpeg: https://ffmpeg.org/download.html
 
 > Pull requests are always welcome. 😁
