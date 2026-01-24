@@ -1,6 +1,15 @@
 #!/bin/bash
 
-uv run pyinstaller --onefile .\app\vmget.py
+# Build script for vmget executable
 
-# Clean up the build files
+set -e
+
+echo "Building vmget executable..."
+
+# Build with PyInstaller
+uv run pyinstaller --onefile --name vmget src/vmget/__main__.py
+
+# Clean up build artifacts
 rm -rf build vmget.spec
+
+echo "Build complete! Executable is in dist/vmget"

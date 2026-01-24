@@ -1,2 +1,38 @@
+# Virtual environment
 .venv
-build
+venv/
+env/
+
+# Build artifacts
+build/
+dist/
+*.spec
+*.egg-info/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+coverage.xml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Project specific
+old.py
+suggestion.md
+
+# uv
+uv.lock

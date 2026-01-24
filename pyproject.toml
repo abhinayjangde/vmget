@@ -1,10 +1,67 @@
 [project]
 name = "vmget"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.13"
+version = "0.2.0"
+description = "Fast and simple video/audio downloader for YouTube and 1000+ sites"
+authors = [
+    { name = "Abhinay Jangde", email = "abhinayjangde@gmail.com" },
+]
+readme = "readme.md"
+requires-python = ">=3.11"
 dependencies = [
-    "pyinstaller>=6.15.0",
-    "yt-dlp>=2025.8.20",
+    "yt-dlp>=2024.0.0",
+]
+license = { text = "MIT" }
+keywords = ["youtube", "download", "video", "audio", "yt-dlp", "cli"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Multimedia :: Sound/Audio",
+]
+
+[project.scripts]
+vmget = "vmget.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.12.0",
+    "pyinstaller>=6.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/abhinayjangde/vmget"
+Repository = "https://github.com/abhinayjangde/vmget"
+Issues = "https://github.com/abhinayjangde/vmget/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vmget"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["src/vmget"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
 ]
