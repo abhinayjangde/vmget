@@ -85,3 +85,54 @@ def is_playlist_url(url: str) -> bool:
         "/album/",  # Bandcamp, Spotify
     ]
     return any(indicator in url.lower() for indicator in playlist_indicators)
+
+
+def format_time(seconds: int | float | None) -> str:
+    """Format seconds to human-readable time string.
+
+    Args:
+        seconds: Time in seconds
+
+    Returns:
+        Formatted time string (e.g., "1:23:45" or "12:34")
+    """
+    if seconds is None or seconds < 0:
+        return "--:--"
+
+    seconds = int(seconds)
+
+    if seconds >= 3600:
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        secs = seconds % 60
+        return f"{hours}:{minutes:02d}:{secs:02d}"
+    else:
+        minutes = seconds // 60
+        secs = seconds % 60
+        return f"{minutes:02d}:{secs:02d}"
+
+
+def read_urls_from_file(filepath: str) -> list[str]:
+    """Read URLs from a text file (one URL per line).
+
+    Args:
+        filepath: Path to the file containing URLs
+
+    Returns:
+        List of URLs (empty lines and comments starting with # are ignored)
+    """
+    urls = []
+
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                # Skip empty lines and comments
+                if line and not line.startswith("#"):
+                    urls.append(line)
+    except FileNotFoundError:
+        print(f"Error: File not found: {filepath}")
+    except IOError as e:
+        print(f"Error reading file {filepath}: {e}")
+
+    return urls

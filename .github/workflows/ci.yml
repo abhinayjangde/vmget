@@ -147,10 +147,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            artifacts/vmget-windows-amd64.exe/vmget.exe
-            artifacts/vmget-linux-amd64/vmget
-            artifacts/vmget-macos-amd64/vmget
+          files: artifacts/**/*
           generate_release_notes: true
           draft: false
           prerelease: false

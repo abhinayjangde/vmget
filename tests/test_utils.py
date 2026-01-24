@@ -10,6 +10,8 @@ from vmget.utils import (
     check_ffmpeg,
     format_size,
     is_playlist_url,
+    format_time,
+    read_urls_from_file,
 )
 
 
@@ -143,3 +145,78 @@ class TestIsPlaylistUrl:
 
     def test_empty_url(self):
         assert is_playlist_url("") is False
+
+
+class TestFormatTime:
+    """Tests for format_time function."""
+
+    def test_seconds_only(self):
+        assert format_time(45) == "00:45"
+
+    def test_minutes_and_seconds(self):
+        assert format_time(125) == "02:05"
+
+    def test_hours_minutes_seconds(self):
+        assert format_time(3661) == "1:01:01"
+
+    def test_zero(self):
+        assert format_time(0) == "00:00"
+
+    def test_none(self):
+        assert format_time(None) == "--:--"
+
+    def test_negative(self):
+        assert format_time(-10) == "--:--"
+
+    def test_float_seconds(self):
+        assert format_time(65.7) == "01:05"
+
+    def test_large_value(self):
+        assert format_time(7200) == "2:00:00"
+
+
+class TestReadUrlsFromFile:
+    """Tests for read_urls_from_file function."""
+
+    def test_read_valid_file(self, tmp_path):
+        # Create a test file with URLs
+        url_file = tmp_path / "urls.txt"
+        url_file.write_text(
+            "https://youtube.com/watch?v=1\nhttps://youtube.com/watch?v=2\n"
+        )
+
+        urls = read_urls_from_file(str(url_file))
+        assert len(urls) == 2
+        assert urls[0] == "https://youtube.com/watch?v=1"
+        assert urls[1] == "https://youtube.com/watch?v=2"
+
+    def test_skip_empty_lines(self, tmp_path):
+        url_file = tmp_path / "urls.txt"
+        url_file.write_text("https://url1.com\n\n\nhttps://url2.com\n")
+
+        urls = read_urls_from_file(str(url_file))
+        assert len(urls) == 2
+
+    def test_skip_comments(self, tmp_path):
+        url_file = tmp_path / "urls.txt"
+        url_file.write_text(
+            "# This is a comment\nhttps://url1.com\n# Another comment\nhttps://url2.com\n"
+        )
+
+        urls = read_urls_from_file(str(url_file))
+        assert len(urls) == 2
+        assert urls[0] == "https://url1.com"
+
+    def test_file_not_found(self, tmp_path, capsys):
+        urls = read_urls_from_file(str(tmp_path / "nonexistent.txt"))
+        assert urls == []
+        captured = capsys.readouterr()
+        assert "File not found" in captured.out
+
+    def test_strips_whitespace(self, tmp_path):
+        url_file = tmp_path / "urls.txt"
+        url_file.write_text("  https://url1.com  \n  https://url2.com\t\n")
+
+        urls = read_urls_from_file(str(url_file))
+        assert urls[0] == "https://url1.com"
+        assert urls[1] == "https://url2.com"
