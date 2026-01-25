@@ -15,14 +15,30 @@ from vmget.config import (
     PROGRESS_BAR_WIDTH,
 )
 from vmget.utils import sanitize_filename, ensure_directory, format_size, format_time
+from vmget.colors import (
+    success,
+    error,
+    warning,
+    info,
+    highlight,
+    bold,
+    dim,
+    print_success,
+    print_error,
+    print_warning,
+    print_info,
+    Colors,
+)
 
 
 class ProgressHook:
     """Progress hook for displaying download progress."""
 
-    def __init__(self):
+    def __init__(self, output_dir: str | None = None):
         self.current_file = None
         self.last_percent = -1
+        self.output_dir = output_dir
+        self.downloaded_files: list[str] = []
 
     def __call__(self, d: dict) -> None:
         """Handle progress updates from yt-dlp.
@@ -35,7 +51,7 @@ class ProgressHook:
         elif d["status"] == "finished":
             self._show_finished(d)
         elif d["status"] == "error":
-            print("\nDownload error occurred.")
+            print(f"\n{error('Download error occurred.')}")
 
     def _show_progress(self, d: dict) -> None:
         """Display download progress bar."""
@@ -60,9 +76,12 @@ class ProgressHook:
         self.last_percent = int(percent)
         self.current_file = filename
 
-        # Build progress bar
+        # Build progress bar with color
         filled = int(PROGRESS_BAR_WIDTH * percent / 100)
-        bar = "█" * filled + "░" * (PROGRESS_BAR_WIDTH - filled)
+        if Colors._enabled:
+            bar = f"{Colors.GREEN}{'█' * filled}{Colors.RESET}{'░' * (PROGRESS_BAR_WIDTH - filled)}"
+        else:
+            bar = "█" * filled + "░" * (PROGRESS_BAR_WIDTH - filled)
 
         # Format speed and ETA
         speed_str = f"{format_size(speed)}/s" if speed else "---"
@@ -84,12 +103,19 @@ class ProgressHook:
         """Display download finished message."""
         # Clear the progress line and show completion
         sys.stdout.write("\r" + " " * 100 + "\r")  # Clear line
-        filename = os.path.basename(d.get("filename", "Unknown"))
+        filepath = d.get("filename", "Unknown")
+        filename = os.path.basename(filepath)
         total = d.get("total_bytes", 0)
+
+        # Track downloaded files for final summary
+        self.downloaded_files.append(filepath)
+
         if total:
-            print(f"  Downloaded: {filename} ({format_size(total)})")
+            print(
+                f"  {success('✓')} Downloaded: {highlight(filename)} ({format_size(total)})"
+            )
         else:
-            print(f"  Downloaded: {filename}")
+            print(f"  {success('✓')} Downloaded: {highlight(filename)}")
 
 
 def get_playlist_info(url: str) -> dict | None:
@@ -138,6 +164,37 @@ def get_video_info(url: str) -> dict | None:
         return None
 
 
+def display_video_info(info_dict: dict) -> None:
+    """Display video information before downloading.
+
+    Args:
+        info_dict: Video info dictionary from yt-dlp
+    """
+    title = info_dict.get("title", "Unknown")
+    duration = info_dict.get("duration")
+    uploader = info_dict.get("uploader", info_dict.get("channel"))
+    view_count = info_dict.get("view_count")
+    filesize = info_dict.get("filesize") or info_dict.get("filesize_approx")
+
+    print()
+    print(f"  {bold('Title:')}    {highlight(title)}")
+
+    if uploader:
+        print(f"  {bold('Channel:')}  {uploader}")
+
+    if duration:
+        print(f"  {bold('Duration:')} {format_time(duration)}")
+
+    if filesize:
+        print(f"  {bold('Size:')}     ~{format_size(filesize)}")
+
+    if view_count:
+        view_str = f"{view_count:,}" if isinstance(view_count, int) else str(view_count)
+        print(f"  {bold('Views:')}    {view_str}")
+
+    print()
+
+
 def is_audio_format(file_format: str) -> bool:
     """Check if the format is an audio-only format.
 
@@ -157,6 +214,7 @@ def build_ydl_options(
     is_playlist: bool = False,
     show_progress: bool = True,
     write_thumbnail: bool = False,
+    progress_hook: ProgressHook | None = None,
 ) -> dict:
     """Build yt-dlp options dictionary.
 
@@ -167,6 +225,7 @@ def build_ydl_options(
         is_playlist: Whether downloading a playlist
         show_progress: Whether to show progress bar
         write_thumbnail: Whether to save video thumbnail
+        progress_hook: Optional ProgressHook instance to use
 
     Returns:
         yt-dlp options dictionary
@@ -186,7 +245,8 @@ def build_ydl_options(
 
     # Add progress hook if enabled
     if show_progress:
-        ydl_opts["progress_hooks"] = [ProgressHook()]
+        hook = progress_hook or ProgressHook(output_dir=output_dir)
+        ydl_opts["progress_hooks"] = [hook]
 
     # Thumbnail options
     if write_thumbnail:
@@ -269,7 +329,7 @@ def download_content(
     """
     # Validate format
     if file_format not in SUPPORTED_FORMATS:
-        print(
+        print_error(
             f"Error: Unsupported format '{file_format}'. Use: {', '.join(SUPPORTED_FORMATS)}"
         )
         return False
@@ -285,7 +345,7 @@ def download_content(
     # Default quality for video formats if not specified
     if not is_audio_format(file_format) and not quality:
         quality = DEFAULT_VIDEO_QUALITY
-        print(f"No quality specified, defaulting to {quality}")
+        print(f"{info('No quality specified, defaulting to')} {highlight(quality)}")
 
     # Check if URL is a playlist
     playlist_info = None if no_playlist else get_playlist_info(url)
@@ -293,14 +353,22 @@ def download_content(
     if playlist_info:
         playlist_title = playlist_info.get("title", "Unknown Playlist")
         video_count = len(playlist_info.get("entries", []))
-        print(f"Detected playlist: {playlist_title}")
-        print(f"Total videos in playlist: {video_count}")
+        print(f"{info('Detected playlist:')} {highlight(playlist_title)}")
+        print(f"{info('Total videos in playlist:')} {highlight(str(video_count))}")
 
         # Create subfolder for playlist
         safe_title = sanitize_filename(playlist_title)
         output_dir = os.path.join(output_dir, safe_title)
         if not ensure_directory(output_dir):
             return False
+    else:
+        # Fetch and display video info for single videos
+        video_info = get_video_info(url)
+        if video_info:
+            display_video_info(video_info)
+
+    # Create progress hook to track downloaded files
+    progress_hook = ProgressHook(output_dir=output_dir) if show_progress else None
 
     # Build yt-dlp options
     ydl_opts = build_ydl_options(
@@ -310,6 +378,7 @@ def download_content(
         is_playlist=playlist_info is not None,
         show_progress=show_progress,
         write_thumbnail=write_thumbnail,
+        progress_hook=progress_hook,
     )
 
     # Playlist-specific options
@@ -318,34 +387,44 @@ def download_content(
 
     if playlist_items:
         ydl_opts["playlist_items"] = playlist_items
-        print(f"Downloading playlist items: {playlist_items}")
+        print(f"{info('Downloading playlist items:')} {highlight(playlist_items)}")
 
     # Execute download
     try:
         with YoutubeDL(ydl_opts) as ydl:
-            print(f"Downloading from: {url}")
-            print(
-                f"Format: {file_format.upper()}"
-                + (
-                    f" @ {quality}"
-                    if quality and not is_audio_format(file_format)
-                    else ""
-                )
+            print(f"{info('Downloading from:')} {dim(url)}")
+            format_display = f"{highlight(file_format.upper())}" + (
+                f" @ {highlight(quality)}"
+                if quality and not is_audio_format(file_format)
+                else ""
             )
+            print(f"{info('Format:')} {format_display}")
+            print()
             ydl.download([url])
-            print("Download completed successfully!")
+
+            # Show completion message with file path
+            print()
+            print_success("Download completed successfully!")
+            print(f"{info('Saved to:')} {highlight(os.path.abspath(output_dir))}")
+
+            # List downloaded files if available
+            if progress_hook and progress_hook.downloaded_files:
+                if len(progress_hook.downloaded_files) == 1:
+                    final_file = progress_hook.downloaded_files[0]
+                    print(f"{info('File:')} {highlight(os.path.basename(final_file))}")
+
             return True
     except yt_dlp.utils.DownloadError as e:
-        print(f"\nDownload error: {e}")
+        print_error(f"\nDownload error: {e}")
         return False
     except yt_dlp.utils.ExtractorError as e:
-        print(f"\nExtractor error (invalid URL or unsupported site): {e}")
+        print_error(f"\nExtractor error (invalid URL or unsupported site): {e}")
         return False
     except KeyboardInterrupt:
-        print("\n\nDownload cancelled by user.")
+        print_warning("\n\nDownload cancelled by user.")
         return False
     except Exception as e:
-        print(f"\nUnexpected error: {e}")
+        print_error(f"\nUnexpected error: {e}")
         return False
 
 
@@ -378,13 +457,13 @@ def download_multiple(
     successful = 0
     failed = 0
 
-    print(f"Downloading {total} URL(s)...")
-    print("-" * 50)
+    print(f"{info('Downloading')} {highlight(str(total))} {info('URL(s)...')}")
+    print(bold("─" * 50))
 
     for i, url in enumerate(urls, 1):
-        print(f"\n[{i}/{total}] Processing URL...")
+        print(f"\n{info(f'[{i}/{total}]')} Processing URL...")
 
-        success = download_content(
+        result = download_content(
             url=url,
             quality=quality,
             file_format=file_format,
@@ -395,12 +474,16 @@ def download_multiple(
             write_thumbnail=write_thumbnail,
         )
 
-        if success:
+        if result:
             successful += 1
         else:
             failed += 1
 
-    print("\n" + "=" * 50)
-    print(f"Completed: {successful} successful, {failed} failed out of {total} total")
+    print("\n" + bold("═" * 50))
+    summary_parts = [
+        success(f"{successful} successful"),
+        error(f"{failed} failed") if failed > 0 else f"{failed} failed",
+    ]
+    print(f"{info('Completed:')} {', '.join(summary_parts)} out of {total} total")
 
     return successful, failed

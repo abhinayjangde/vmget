@@ -211,7 +211,8 @@ class TestReadUrlsFromFile:
         urls = read_urls_from_file(str(tmp_path / "nonexistent.txt"))
         assert urls == []
         captured = capsys.readouterr()
-        assert "File not found" in captured.out
+        # Error is now printed to stderr with colored output
+        assert "File not found" in captured.err
 
     def test_strips_whitespace(self, tmp_path):
         url_file = tmp_path / "urls.txt"

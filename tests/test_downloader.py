@@ -117,9 +117,17 @@ class TestDownloadContent:
         assert result is False
 
     @patch("vmget.downloader.YoutubeDL")
+    @patch("vmget.downloader.get_video_info")
     @patch("vmget.downloader.get_playlist_info")
-    def test_successful_download(self, mock_playlist_info, mock_ydl_class, tmp_path):
+    def test_successful_download(
+        self, mock_playlist_info, mock_video_info, mock_ydl_class, tmp_path
+    ):
         mock_playlist_info.return_value = None
+        mock_video_info.return_value = {
+            "title": "Test Video",
+            "duration": 120,
+            "uploader": "Test Channel",
+        }
 
         mock_ydl = MagicMock()
         mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
@@ -137,13 +145,19 @@ class TestDownloadContent:
         assert result is True
 
     @patch("vmget.downloader.YoutubeDL")
+    @patch("vmget.downloader.get_video_info")
     @patch("vmget.downloader.get_playlist_info")
     def test_download_error_returns_false(
-        self, mock_playlist_info, mock_ydl_class, tmp_path
+        self, mock_playlist_info, mock_video_info, mock_ydl_class, tmp_path
     ):
         import yt_dlp
 
         mock_playlist_info.return_value = None
+        mock_video_info.return_value = {
+            "title": "Test Video",
+            "duration": 120,
+            "uploader": "Test Channel",
+        }
 
         mock_ydl = MagicMock()
         mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
@@ -162,25 +176,41 @@ class TestDownloadContent:
     def test_default_quality_for_mp4(self, tmp_path, capsys):
         with patch("vmget.downloader.YoutubeDL") as mock_ydl_class:
             with patch("vmget.downloader.get_playlist_info", return_value=None):
-                mock_ydl = MagicMock()
-                mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
-                mock_ydl.__exit__ = MagicMock(return_value=False)
-                mock_ydl_class.return_value = mock_ydl
+                with patch(
+                    "vmget.downloader.get_video_info",
+                    return_value={
+                        "title": "Test Video",
+                        "duration": 120,
+                        "uploader": "Test Channel",
+                    },
+                ):
+                    mock_ydl = MagicMock()
+                    mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+                    mock_ydl.__exit__ = MagicMock(return_value=False)
+                    mock_ydl_class.return_value = mock_ydl
 
-                download_content(
-                    url="https://youtube.com/watch?v=test",
-                    file_format="mp4",
-                    quality=None,  # No quality specified
-                    output_dir=str(tmp_path),
-                )
+                    download_content(
+                        url="https://youtube.com/watch?v=test",
+                        file_format="mp4",
+                        quality=None,  # No quality specified
+                        output_dir=str(tmp_path),
+                    )
 
-                captured = capsys.readouterr()
-                assert "defaulting to 720p" in captured.out
+                    captured = capsys.readouterr()
+                    assert "defaulting to 720p" in captured.out
 
     @patch("vmget.downloader.YoutubeDL")
+    @patch("vmget.downloader.get_video_info")
     @patch("vmget.downloader.get_playlist_info")
-    def test_no_playlist_option(self, mock_playlist_info, mock_ydl_class, tmp_path):
+    def test_no_playlist_option(
+        self, mock_playlist_info, mock_video_info, mock_ydl_class, tmp_path
+    ):
         mock_playlist_info.return_value = None
+        mock_video_info.return_value = {
+            "title": "Test Video",
+            "duration": 120,
+            "uploader": "Test Channel",
+        }
 
         mock_ydl = MagicMock()
         mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)

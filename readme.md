@@ -35,3 +35,7 @@ make sure to install ffmpeg package on your system and add it to the PATH variab
 here is the link to download ffmpeg: https://ffmpeg.org/download.html
 
 > Pull requests are always welcome. 😁
+
+
+git tag v1.0.0
+git push origin v1.0.0

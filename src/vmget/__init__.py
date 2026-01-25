@@ -16,6 +16,7 @@ from vmget.config import (
     VIDEO_FORMATS,
     AUDIO_FORMATS,
 )
+from vmget.user_config import load_config, get_sample_config, UserConfig
 
 __all__ = [
     "__version__",
@@ -29,4 +30,7 @@ __all__ = [
     "SUPPORTED_FORMATS",
     "VIDEO_FORMATS",
     "AUDIO_FORMATS",
+    "load_config",
+    "get_sample_config",
+    "UserConfig",
 ]

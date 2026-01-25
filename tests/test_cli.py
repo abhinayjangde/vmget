@@ -12,11 +12,13 @@ class TestCreateParser:
     def test_parser_has_required_arguments(self):
         parser = create_parser()
 
-        # Parse with minimum required arguments (URL only, format defaults to mp4)
+        # Parse with minimum required arguments (URL only, format defaults to None in parser)
         args = parser.parse_args(["https://youtube.com/watch?v=test"])
 
         assert args.url == ["https://youtube.com/watch?v=test"]
-        assert args.file_format == "mp4"  # default
+        assert (
+            args.file_format is None
+        )  # Default from parser is None (config provides default)
 
     def test_parser_accepts_format_flag(self):
         parser = create_parser()
@@ -264,13 +266,16 @@ class TestMain:
         mock_read_urls.assert_called_once_with("urls.txt")
         mock_download_multiple.assert_called_once()
 
-    def test_main_returns_error_when_no_urls(self, capsys):
+    @patch("vmget.interactive.run_interactive_mode")
+    def test_main_returns_error_when_no_urls(self, mock_interactive, capsys):
+        """Test that running vmget with no arguments triggers interactive mode."""
+        mock_interactive.return_value = None  # User cancelled interactive mode
+
         with patch("sys.argv", ["vmget"]):
             result = main()
 
         assert result == 1
-        captured = capsys.readouterr()
-        assert "No URLs provided" in captured.out
+        mock_interactive.assert_called_once()
 
     @patch("vmget.cli.download_content")
     @patch("vmget.cli.check_ffmpeg")

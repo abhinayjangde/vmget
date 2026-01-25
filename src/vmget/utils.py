@@ -36,10 +36,14 @@ def ensure_directory(path: str) -> bool:
 
     try:
         os.makedirs(path)
-        print(f"Created directory: {path}")
+        from vmget.colors import info, highlight
+
+        print(f"{info('Created directory:')} {highlight(path)}")
         return True
     except OSError as e:
-        print(f"Error: Could not create directory '{path}': {e}")
+        from vmget.colors import print_error
+
+        print_error(f"Error: Could not create directory '{path}': {e}")
         return False
 
 
@@ -131,8 +135,12 @@ def read_urls_from_file(filepath: str) -> list[str]:
                 if line and not line.startswith("#"):
                     urls.append(line)
     except FileNotFoundError:
-        print(f"Error: File not found: {filepath}")
+        from vmget.colors import print_error
+
+        print_error(f"Error: File not found: {filepath}")
     except IOError as e:
-        print(f"Error reading file {filepath}: {e}")
+        from vmget.colors import print_error
+
+        print_error(f"Error reading file {filepath}: {e}")
 
     return urls
