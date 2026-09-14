@@ -87,13 +87,16 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            artifact_name: vmget.exe
+            artifact_name: vmget-windows-amd64.exe
+            build_name: vmget-windows-amd64
             asset_name: vmget-windows-amd64.exe
           - os: ubuntu-latest
-            artifact_name: vmget
+            artifact_name: vmget-linux-amd64
+            build_name: vmget-linux-amd64
             asset_name: vmget-linux-amd64
           - os: macos-latest
-            artifact_name: vmget
+            artifact_name: vmget-macos-amd64
+            build_name: vmget-macos-amd64
             asset_name: vmget-macos-amd64
 
     steps:
@@ -116,7 +119,7 @@ jobs:
 
       - name: Build executable with PyInstaller
         run: |
-          uv run pyinstaller --onefile --name vmget src/vmget/__main__.py
+          uv run pyinstaller --onefile --name ${{ matrix.build_name }} src/vmget/__main__.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
