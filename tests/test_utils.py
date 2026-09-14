@@ -12,6 +12,7 @@ from vmget.utils import (
     is_playlist_url,
     format_time,
     read_urls_from_file,
+    expand_url,
 )
 
 
@@ -221,3 +222,45 @@ class TestReadUrlsFromFile:
         urls = read_urls_from_file(str(url_file))
         assert urls[0] == "https://url1.com"
         assert urls[1] == "https://url2.com"
+
+
+class TestExpandUrl:
+    """Tests for expand_url function."""
+
+    @patch("urllib.request.urlopen")
+    def test_expands_amzn_in_url(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.url = "https://www.amazon.in/dp/B0CTS2TTVM"
+        mock_urlopen.return_value.__enter__.return_value = mock_response
+
+        result = expand_url("https://amzn.in/d/02wl4mYI")
+        assert result == "https://www.amazon.in/dp/B0CTS2TTVM"
+
+    @patch("urllib.request.urlopen")
+    def test_expands_amzn_com_url(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.url = "https://www.amazon.com/dp/B08N5WRWNW"
+        mock_urlopen.return_value.__enter__.return_value = mock_response
+
+        result = expand_url("https://amzn.to/abc123")
+        assert result == "https://www.amazon.com/dp/B08N5WRWNW"
+
+    def test_returns_original_for_non_shortener(self):
+        result = expand_url("https://youtube.com/watch?v=abc123")
+        assert result == "https://youtube.com/watch?v=abc123"
+
+    @patch("urllib.request.urlopen")
+    def test_returns_original_on_error(self, mock_urlopen):
+        mock_urlopen.side_effect = Exception("Network error")
+
+        result = expand_url("https://amzn.in/d/02wl4mYI")
+        assert result == "https://amzn.in/d/02wl4mYI"
+
+    @patch("urllib.request.urlopen")
+    def test_handles_no_redirect(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.url = "https://amzn.in/d/02wl4mYI"
+        mock_urlopen.return_value.__enter__.return_value = mock_response
+
+        result = expand_url("https://amzn.in/d/02wl4mYI")
+        assert result == "https://amzn.in/d/02wl4mYI"

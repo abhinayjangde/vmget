@@ -31,18 +31,24 @@ class TestBuildYdlOptions:
     def test_mp4_options_720p(self, tmp_path):
         opts = build_ydl_options("mp4", "720p", str(tmp_path), is_playlist=False)
 
-        assert "bestvideo[height<=720]" in opts["format"]
+        # MP4 prefers H.264 (avc) for Premiere Pro compatibility
+        assert "vcodec^=avc" in opts["format"]
+        assert "height<=720" in opts["format"]
         assert opts["merge_output_format"] == "mp4"
 
     def test_mp4_options_1080p(self, tmp_path):
         opts = build_ydl_options("mp4", "1080p", str(tmp_path), is_playlist=False)
 
-        assert "bestvideo[height<=1080]" in opts["format"]
+        assert "height<=1080" in opts["format"]
+        assert "vcodec^=avc" in opts["format"]
 
     def test_mp4_options_best_quality(self, tmp_path):
         opts = build_ydl_options("mp4", "best", str(tmp_path), is_playlist=False)
 
-        assert opts["format"] == "bestvideo+bestaudio/best"
+        # MP4 prefers H.264 (avc) + AAC audio for Premiere Pro compatibility
+        assert "vcodec^=avc" in opts["format"]
+        assert "acodec^=mp4a" in opts["format"]
+        assert "bestvideo+bestaudio/best" in opts["format"]  # Fallback
 
     def test_playlist_output_template(self, tmp_path):
         opts = build_ydl_options("mp4", "720p", str(tmp_path), is_playlist=True)

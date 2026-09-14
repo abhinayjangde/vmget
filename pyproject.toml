@@ -1,6 +1,6 @@
 [project]
 name = "vmget"
-version = "0.3.0"
+version = "1.0.4"
 description = "Fast and simple video/audio downloader for YouTube and 1000+ sites"
 authors = [
     { name = "Abhinay Jangde", email = "abhinayjangde@gmail.com" },

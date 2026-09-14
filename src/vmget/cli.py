@@ -12,7 +12,7 @@ from vmget.config import (
     AUDIO_FORMATS,
 )
 from vmget.downloader import download_content, download_multiple
-from vmget.utils import check_ffmpeg, read_urls_from_file
+from vmget.utils import check_ffmpeg, read_urls_from_file, expand_url
 from vmget.user_config import load_config, get_sample_config
 from vmget.colors import (
     print_warning,
@@ -185,7 +185,7 @@ def main() -> int:
             return 1
 
         # Use interactive mode results
-        urls = [result["url"]]
+        urls = [expand_url(result["url"])]
         final_format = result["format"]
         final_quality = result["quality"]
         output_dir = result["output_dir"]
@@ -236,6 +236,10 @@ def main() -> int:
             )
             print_info("Tip: Run 'vmget' without arguments for interactive mode.")
             return 1
+
+        # Expand shortened URLs
+        expanded_urls = [expand_url(url) for url in urls]
+        urls = expanded_urls
 
         # Determine final format and quality (CLI args > positional args > config file)
         final_format = (

@@ -2,6 +2,8 @@
 
 import os
 import shutil
+import urllib.request
+from urllib.error import URLError
 from vmget.config import SAFE_FILENAME_CHARS
 
 
@@ -144,3 +146,51 @@ def read_urls_from_file(filepath: str) -> list[str]:
         print_error(f"Error reading file {filepath}: {e}")
 
     return urls
+
+
+def expand_url(url: str) -> str:
+    """Expand shortened URLs to their final destination.
+
+    Args:
+        url: Potentially shortened URL
+
+    Returns:
+        Expanded URL or original URL if expansion fails
+    """
+    known_shorteners = {
+        "amzn.in",
+        "amzn.com",
+        "amzn.to",
+        "bit.ly",
+        "goo.gl",
+        "tinyurl.com",
+        "ow.ly",
+        "t.co",
+    }
+
+    try:
+        parsed = urllib.parse.urlparse(url)
+        if parsed.netloc.lower() in known_shorteners or any(
+            parsed.netloc.lower().endswith("." + s) for s in known_shorteners
+        ):
+            request = urllib.request.Request(
+                url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                },
+            )
+            with urllib.request.urlopen(request, timeout=10) as response:
+                expanded = response.url
+                if expanded and expanded != url:
+                    from vmget.colors import info, highlight
+
+                    print(
+                        f"{info('Expanded URL:')} {highlight(url)} -> {highlight(expanded)}"
+                    )
+                    return expanded
+    except URLError:
+        pass
+    except Exception:
+        pass
+
+    return url

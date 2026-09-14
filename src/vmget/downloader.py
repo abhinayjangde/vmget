@@ -288,12 +288,51 @@ def build_ydl_options(
             )
     # Video formats
     else:
-        # Handle "best" quality option
-        if quality == "best":
-            format_str = "bestvideo+bestaudio/best"
+        # For MP4: prefer H.264 video + AAC audio for Premiere Pro compatibility
+        # VP9/Opus codecs are not supported by many video editors
+        if file_format == "mp4":
+            # Tell yt-dlp to prefer H.264 + AAC when ranking formats.
+            # This ensures VP9/Opus aren't chosen over H.264/AAC even when
+            # yt-dlp considers them "better" quality.
+            ydl_opts["format_sort"] = ["vcodec:h264", "acodec:aac"]
+
+            if quality == "best":
+                # Fallback chain: H.264+AAC -> H.264+any -> any+AAC -> any+any
+                format_str = (
+                    "bestvideo[vcodec^=avc]+bestaudio[acodec^=mp4a]/"
+                    "bestvideo[vcodec^=avc]+bestaudio/"
+                    "bestvideo+bestaudio[acodec^=mp4a]/"
+                    "bestvideo+bestaudio/"
+                    "best[vcodec^=avc]/best"
+                )
+            else:
+                height = quality[:-1]  # Remove 'p' from quality
+                # Fallback chain with height constraint, then without,
+                # then unconditional best (for sites like Instagram that
+                # provide single combined streams without height metadata)
+                format_str = (
+                    f"bestvideo[vcodec^=avc][height<={height}]+bestaudio[acodec^=mp4a]/"
+                    f"bestvideo[vcodec^=avc][height<={height}]+bestaudio/"
+                    f"bestvideo[height<={height}]+bestaudio[acodec^=mp4a]/"
+                    f"bestvideo[height<={height}]+bestaudio/"
+                    f"best[vcodec^=avc][height<={height}]/"
+                    f"best[height<={height}]/"
+                    f"bestvideo[vcodec^=avc]+bestaudio[acodec^=mp4a]/"
+                    f"bestvideo[vcodec^=avc]+bestaudio/"
+                    f"bestvideo+bestaudio/"
+                    f"best[vcodec^=avc]/best"
+                )
+        # For webm/mkv: use best available codecs (VP9/AV1 are fine)
         else:
-            height = quality[:-1]  # Remove 'p' from quality
-            format_str = f"bestvideo[height<={height}]+bestaudio/best[height<={height}]"
+            if quality == "best":
+                format_str = "bestvideo+bestaudio/best"
+            else:
+                height = quality[:-1]  # Remove 'p' from quality
+                format_str = (
+                    f"bestvideo[height<={height}]+bestaudio/"
+                    f"best[height<={height}]/"
+                    f"bestvideo+bestaudio/best"
+                )
 
         ydl_opts["format"] = format_str
         ydl_opts["merge_output_format"] = file_format

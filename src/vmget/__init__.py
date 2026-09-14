@@ -4,7 +4,7 @@ A command-line tool for downloading videos and audio from YouTube
 and 1000+ other sites using yt-dlp.
 """
 
-__version__ = "0.3.0"
+__version__ = "1.0.4"
 __author__ = "Abhi"
 __description__ = "Fast and simple video/audio downloader for YouTube and 1000+ sites"
 
