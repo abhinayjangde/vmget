@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11"
 
 [[package]]
@@ -326,9 +326,10 @@ wheels = [
 
 [[package]]
 name = "vmget"
-version = "0.3.0"
+version = "1.0.4"
 source = { editable = "." }
 dependencies = [
+    { name = "pyinstaller" },
     { name = "yt-dlp" },
 ]
 
@@ -342,6 +343,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "pyinstaller", specifier = ">=6.15.0" },
     { name = "pyinstaller", marker = "extra == 'dev'", specifier = ">=6.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
