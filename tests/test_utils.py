@@ -52,6 +52,13 @@ class TestEnsureDirectory:
     def test_existing_directory(self, tmp_path):
         assert ensure_directory(str(tmp_path)) is True
 
+    def test_existing_file(self, tmp_path, capsys):
+        output_file = tmp_path / "output.txt"
+        output_file.write_text("existing file")
+
+        assert ensure_directory(str(output_file)) is False
+        assert "not a directory" in capsys.readouterr().err
+
     def test_create_new_directory(self, tmp_path):
         new_dir = tmp_path / "new_folder"
         assert ensure_directory(str(new_dir)) is True

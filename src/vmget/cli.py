@@ -215,6 +215,7 @@ def main() -> int:
                         third_arg = args.url[2].lower()
                         if third_arg in SUPPORTED_QUALITIES:
                             positional_quality = third_arg
+                            urls.extend(args.url[3:])
                         else:
                             # It's another URL
                             urls.extend(args.url[2:])

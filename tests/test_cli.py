@@ -89,6 +89,32 @@ class TestCreateParser:
         assert args.url[0] == "https://url1.com"
         assert args.url[2] == "https://url3.com"
 
+    @patch("vmget.cli.download_multiple")
+    @patch("vmget.cli.check_ffmpeg")
+    def test_main_preserves_urls_after_positional_format_and_quality(
+        self, mock_ffmpeg, mock_download_multiple
+    ):
+        mock_ffmpeg.return_value = True
+        mock_download_multiple.return_value = (2, 0)
+
+        with patch(
+            "sys.argv",
+            [
+                "vmget",
+                "https://url1.com",
+                "mp4",
+                "720p",
+                "https://url2.com",
+            ],
+        ):
+            result = main()
+
+        assert result == 0
+        assert mock_download_multiple.call_args.kwargs["urls"] == [
+            "https://url1.com",
+            "https://url2.com",
+        ]
+
     def test_parser_accepts_file_input(self):
         parser = create_parser()
         args = parser.parse_args(["-f", "urls.txt"])

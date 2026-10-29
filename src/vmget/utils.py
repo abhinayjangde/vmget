@@ -34,7 +34,13 @@ def ensure_directory(path: str) -> bool:
         return True
 
     if os.path.exists(path):
-        return True
+        if os.path.isdir(path):
+            return True
+
+        from vmget.colors import print_error
+
+        print_error(f"Error: Output path '{path}' is not a directory")
+        return False
 
     try:
         os.makedirs(path)

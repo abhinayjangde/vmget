@@ -206,6 +206,17 @@ def load_config() -> UserConfig:
                     for err in errors:
                         print_warning(f"  - {err}")
 
+                    if config.format.lower() not in SUPPORTED_FORMATS:
+                        config.format = "mp4"
+                    if config.quality.lower() not in SUPPORTED_QUALITIES:
+                        config.quality = DEFAULT_VIDEO_QUALITY
+                    if config.output_dir:
+                        expanded_dir = os.path.expanduser(config.output_dir)
+                        if os.path.exists(expanded_dir) and not os.path.isdir(
+                            expanded_dir
+                        ):
+                            config.output_dir = None
+
                 return config
 
             except Exception as e:

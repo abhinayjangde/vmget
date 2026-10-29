@@ -136,6 +136,28 @@ class TestLoadConfig:
         assert "~" not in config.output_dir
         assert "Videos" in config.output_dir
 
+    def test_invalid_values_use_defaults(self, tmp_path, capsys):
+        config_file = tmp_path / ".vmgetrc"
+        config_file.write_text('format = "avi"\nquality = "4k"')
+
+        with patch("vmget.user_config.get_config_paths", return_value=[config_file]):
+            config = load_config()
+
+        assert config.format == "mp4"
+        assert config.quality == "720p"
+        assert "has issues" in capsys.readouterr().out
+
+    def test_invalid_output_file_uses_default(self, tmp_path):
+        output_file = tmp_path / "output.txt"
+        output_file.write_text("existing file")
+        config_file = tmp_path / ".vmgetrc"
+        config_file.write_text(f"output_dir = '{output_file}'")
+
+        with patch("vmget.user_config.get_config_paths", return_value=[config_file]):
+            config = load_config()
+
+        assert config.output_dir is None
+
     def test_handles_missing_config(self, tmp_path):
         nonexistent = tmp_path / "nonexistent.toml"
         with patch("vmget.user_config.get_config_paths", return_value=[nonexistent]):

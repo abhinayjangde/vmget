@@ -179,6 +179,30 @@ class TestDownloadContent:
 
         assert result is False
 
+    @patch("vmget.downloader.YoutubeDL")
+    @patch("vmget.downloader.get_video_info")
+    @patch("vmget.downloader.get_playlist_info")
+    def test_nonzero_download_result_returns_false(
+        self, mock_playlist_info, mock_video_info, mock_ydl_class, tmp_path
+    ):
+        mock_playlist_info.return_value = None
+        mock_video_info.return_value = {"title": "Test Video"}
+
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.download.return_value = 1
+        mock_ydl_class.return_value = mock_ydl
+
+        result = download_content(
+            url="https://youtube.com/watch?v=failed",
+            file_format="mp4",
+            quality="720p",
+            output_dir=str(tmp_path),
+        )
+
+        assert result is False
+
     def test_default_quality_for_mp4(self, tmp_path, capsys):
         with patch("vmget.downloader.YoutubeDL") as mock_ydl_class:
             with patch("vmget.downloader.get_playlist_info", return_value=None):

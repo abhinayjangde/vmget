@@ -439,7 +439,12 @@ def download_content(
             )
             print(f"{info('Format:')} {format_display}")
             print()
-            ydl.download([url])
+            result = ydl.download([url])
+            if result != 0:
+                print_error(
+                    f"\nDownload failed with exit code {result}."
+                )
+                return False
 
             # Show completion message with file path
             print()
