@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="VMGET is a fast, simple command-line video and audio downloader for YouTube and 1000+ sites."
+    />
+    <meta name="theme-color" content="#0b1020" />
+    <title>VMGET — media downloads, without the clutter</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="#" aria-label="VMGET home">
+          <span class="brand-mark" aria-hidden="true">&gt;_</span>
+          <span>vmget</span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+          <span></span><span></span><span></span>
+          <span class="sr-only">Toggle navigation</span>
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+          <a href="#features">Features</a>
+          <a href="#quick-start">Quick start</a>
+          <a href="#formats">Formats</a>
+          <a class="nav-github" href="https://github.com/abhinayjangde/vmget" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="hero-copy reveal">
+            <p class="eyebrow"><span class="eyebrow-dot"></span> Open source · MIT licensed</p>
+            <h1>Media downloads.<br /><em>Zero clutter.</em></h1>
+            <p class="hero-text">
+              A fast, friendly command-line tool for downloading video and audio
+              from YouTube and 1000+ other sites.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#quick-start">Get started <span aria-hidden="true">↓</span></a>
+              <a class="button button-ghost" href="https://github.com/abhinayjangde/vmget" target="_blank" rel="noreferrer">View on GitHub <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="install-line">
+              <span class="prompt">$</span>
+              <code>pip install vmget</code>
+              <button class="copy-button" type="button" data-copy="pip install vmget" aria-label="Copy install command">copy</button>
+            </div>
+          </div>
+
+          <div class="hero-terminal reveal" aria-label="VMGET terminal preview">
+            <div class="terminal-topbar">
+              <span class="terminal-dot dot-red"></span>
+              <span class="terminal-dot dot-yellow"></span>
+              <span class="terminal-dot dot-green"></span>
+              <span class="terminal-title">terminal — vmget</span>
+            </div>
+            <div class="terminal-body">
+              <p><span class="terminal-muted">~</span> <span class="terminal-prompt">$</span> vmget <span class="terminal-url">"youtube.com/watch?v=..."</span> mp4 1080p</p>
+              <p class="terminal-muted">Fetching video information...</p>
+              <p><span class="terminal-check">✓</span> <strong>City Lights — 1080p MP4</strong></p>
+              <div class="progress-track"><span></span></div>
+              <p class="terminal-meta">████████████████████░░ 84% · 8.4 MB/s · ETA 00:04</p>
+              <p class="terminal-success"><span class="terminal-check">✓</span> Saved to <span>~/Downloads/City-Lights.mp4</span></p>
+              <p class="terminal-cursor">$ <span class="cursor"></span></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="stats" aria-label="VMGET highlights">
+          <div><strong>1000<span>+</span></strong><small>supported sites</small></div>
+          <div><strong>7</strong><small>quality options</small></div>
+          <div><strong>9</strong><small>output formats</small></div>
+          <div><strong>0</strong><small>tracking scripts</small></div>
+        </section>
+
+        <section id="features" class="section">
+          <div class="section-heading reveal">
+            <p class="eyebrow">Built for your terminal</p>
+            <h2>Everything you need.<br /><span>Nothing you don't.</span></h2>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card reveal">
+              <div class="feature-icon icon-download" aria-hidden="true">↓</div>
+              <h3>One command away</h3>
+              <p>Download a video, extract its audio, or grab an entire playlist with a command that stays out of your way.</p>
+              <code>vmget "URL" mp3</code>
+            </article>
+            <article class="feature-card reveal">
+              <div class="feature-icon icon-sliders" aria-hidden="true">⌘</div>
+              <h3>Make it yours</h3>
+              <p>Pick your format, quality, output directory, playlist range, thumbnail, and more. Defaults keep it quick.</p>
+              <code>vmget "URL" -F mp4 -q 1080p</code>
+            </article>
+            <article class="feature-card reveal">
+              <div class="feature-icon icon-terminal" aria-hidden="true">&gt;_</div>
+              <h3>Friendly by default</h3>
+              <p>Colored output, progress with speed and ETA, an interactive mode, and a config file for repeat workflows.</p>
+              <code>vmget --show-config</code>
+            </article>
+          </div>
+        </section>
+
+        <section id="quick-start" class="quick-start section">
+          <div class="section-heading reveal">
+            <p class="eyebrow">Quick start</p>
+            <h2>From URL to file<br /><span>in seconds.</span></h2>
+          </div>
+          <div class="quick-grid">
+            <div class="steps reveal">
+              <div class="step"><span>01</span><div><h3>Install VMGET</h3><p>Requires Python 3.11+ and FFmpeg for audio extraction.</p><div class="code-block"><code>pip install vmget</code><button class="copy-button" type="button" data-copy="pip install vmget" aria-label="Copy install command">copy</button></div></div></div>
+              <div class="step"><span>02</span><div><h3>Pass a URL</h3><p>Use a video, audio, playlist, or multiple URLs.</p><div class="code-block"><code>vmget "https://youtu.be/VIDEO_ID"</code><button class="copy-button" type="button" data-copy='vmget "https://youtu.be/VIDEO_ID"' aria-label="Copy download command">copy</button></div></div></div>
+              <div class="step"><span>03</span><div><h3>Choose your output</h3><p>VMGET saves the finished file to your current directory.</p><div class="code-block"><code>Done. Enjoy your download.</code></div></div></div>
+            </div>
+            <div class="command-builder reveal">
+              <div class="builder-header"><span>Command builder</span><span class="live-dot">● live</span></div>
+              <label for="format">Format</label>
+              <div class="select-wrap"><select id="format"><option value="mp4">mp4 · video</option><option value="webm">webm · video</option><option value="mkv">mkv · video</option><option value="mp3">mp3 · audio</option><option value="m4a">m4a · audio</option><option value="flac">flac · audio</option></select></div>
+              <label for="quality">Quality</label>
+              <div class="select-wrap"><select id="quality"><option>720p</option><option>1080p</option><option>1440p</option><option>2160p</option><option>best</option></select></div>
+              <div class="generated-command"><span>$</span><code id="generated-command">vmget "URL" -F mp4 -q 720p</code><button id="copy-generated" class="copy-icon" type="button" aria-label="Copy generated command">⧉</button></div>
+              <button id="copy-builder" class="button button-primary button-full" type="button">Copy command <span aria-hidden="true">↗</span></button>
+            </div>
+          </div>
+        </section>
+
+        <section id="formats" class="formats-section section">
+          <div class="formats-copy reveal">
+            <p class="eyebrow">Your files, your way</p>
+            <h2>Video, audio,<br /><span>and everything between.</span></h2>
+            <p>Choose the format that fits your workflow. Quality options range from lightweight 360p to crisp 4K.</p>
+            <a class="text-link" href="https://github.com/abhinayjangde/vmget#usage" target="_blank" rel="noreferrer">Read the full documentation <span>→</span></a>
+          </div>
+          <div class="format-list reveal">
+            <div class="format-row"><span class="format-label">VIDEO</span><span class="format-tag">MP4</span><span class="format-tag">WEBM</span><span class="format-tag">MKV</span></div>
+            <div class="format-row"><span class="format-label">AUDIO</span><span class="format-tag">MP3</span><span class="format-tag">M4A</span><span class="format-tag">FLAC</span><span class="format-tag">WAV</span><span class="format-tag">AAC</span><span class="format-tag">OPUS</span></div>
+            <div class="format-row"><span class="format-label">QUALITY</span><span class="format-tag">360p</span><span class="format-tag">480p</span><span class="format-tag">720p</span><span class="format-tag">1080p</span><span class="format-tag">1440p</span><span class="format-tag">2160p</span></div>
+          </div>
+        </section>
+
+        <section class="cta-section section reveal">
+          <p class="eyebrow">Ready when you are</p>
+          <h2>Keep your media<br /><em>moving.</em></h2>
+          <p>Open source, built for the command line, and ready for your next download.</p>
+          <div class="hero-actions"><a class="button button-primary" href="#quick-start">Install VMGET <span aria-hidden="true">→</span></a><a class="button button-ghost" href="https://github.com/abhinayjangde/vmget/issues" target="_blank" rel="noreferrer">Help improve it <span aria-hidden="true">↗</span></a></div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <a class="brand" href="#"><span class="brand-mark" aria-hidden="true">&gt;_</span><span>vmget</span></a>
+        <p>Fast, simple media downloads.</p>
+        <div class="footer-links"><a href="https://github.com/abhinayjangde/vmget" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/yt-dlp/yt-dlp" target="_blank" rel="noreferrer">Powered by yt-dlp</a><span>MIT License · <span id="year"></span></span></div>
+      </footer>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -312,3 +312,13 @@ Created by [Abhinay Jangde](https://github.com/abhinayjangde)
 - Repository: https://github.com/abhinayjangde/vmget
 - Issues: https://github.com/abhinayjangde/vmget/issues
 - yt-dlp: https://github.com/yt-dlp/yt-dlp
+
+## Website
+
+The project website is a dependency-free static site in [`docs/`](docs/). To publish it with GitHub Pages:
+
+1. Open **Settings → Pages** in the repository.
+2. Select **Deploy from a branch**, choose `main`, and select `/docs` as the folder.
+3. If you have a custom domain, enter it in the Pages settings. GitHub will create the `CNAME` file for the configured domain.
+
+The site is intentionally self-contained, so no Node.js setup or build command is required.
